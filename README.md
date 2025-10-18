@@ -1,75 +1,90 @@
-# Pengikis Web Go (Go Web Scraper)
+# scr-go — Pengikis Web Interaktif (Go)
 
-Sebuah alat pengikis web (web scraper) interaktif berbasis baris perintah (command-line) yang dibuat dengan Go. Alat ini dirancang agar aman, efisien, dan ramah pengguna, memungkinkan Anda untuk mengekstrak data dari situs web dengan mudah sambil mencoba menghindari deteksi bot.
+scr-go adalah alat pengikis web (web scraper) berbasis baris perintah yang ditulis dengan Go. Aplikasi ini bersifat interaktif: pengguna dipandu melalui serangkaian prompt untuk memasukkan URL target, memilih elemen HTML yang ingin diekstrak, serta menentukan format keluaran. Tujuan utamanya adalah membuat scraping yang aman, dapat diulang, dan mudah dipakai.
 
-## Fitur
+## Fitur utama
 
-- **Antarmuka Berbasis Teks**: Pengguna dipandu melalui serangkaian prompt yang jelas untuk memasukkan URL target, memilih elemen HTML, dan memilih format output menggunakan input numerik.
-- **Aman & Tersembunyi**: Secara otomatis merotasi header User-Agent dan menerapkan penundaan acak di antara permintaan untuk meniru perilaku penjelajahan manusia dan mengurangi kemungkinan diblokir.
-- **Pemilihan Elemen Fleksibel**: Pengguna dapat memilih beberapa elemen HTML (seperti `h1`, `p`, `a`, dll.) untuk diekstrak dari halaman target.
-- **Opsi Output Ganda**: Pilih untuk mengekstrak hanya teks bersih dari elemen atau mendapatkan konten HTML penuh, lengkap dengan tag dan atribut.
-- **Output Terstruktur**: Hasil scraping disimpan dalam file JSON yang terformat dengan baik, dengan nama file unik berdasarkan timestamp, membuatnya mudah untuk di-parse dan digunakan lebih lanjut.
-- **Struktur Proyek Modular**: Kode diorganisir ke dalam paket-paket yang berbeda (`antarmuka`, `pengikis`, `utilitas`), membuatnya mudah untuk dipelihara dan diperluas.
+- Antarmuka teks interaktif yang memandu pengguna langkah-demi-langkah.
+- Rotasi header User-Agent otomatis dan penundaan acak antar permintaan untuk meniru perilaku penjelajahan manusia.
+- Pilihan elemen HTML fleksibel (mis. h1, h2, p, a, dll.) — bisa memilih beberapa elemen sekaligus.
+- Pilihan format keluaran: teks bersih (tanpa tag HTML) atau HTML penuh (dengan tag dan atribut).
+- Hasil disimpan sebagai file JSON terformat dengan nama unik berdasarkan timestamp.
+- Struktur kode modular untuk memudahkan pemeliharaan dan pengembangan.
 
 ## Prasyarat
 
-- Go versi 1.21 atau lebih tinggi.
+- Go 1.21 atau lebih tinggi terinstal pada sistem Anda.
+- Koneksi internet untuk mengunduh dependensi dan melakukan permintaan HTTP.
 
-## Instalasi
+## Instalasi & Persiapan
 
-1.  **Clone repository:**
-    ```sh
-    git clone <url-repository-anda> pengikis-web-go
-    cd pengikis-web-go
-    ```
+1. Clone repository:
+```sh
+git clone https://github.com/waone377/scr-go.git
+cd scr-go
+```
 
-2.  **Install dependensi:**
-    Alat ini menggunakan Go Modules. Dependensi akan diunduh secara otomatis saat Anda membangun atau menjalankan proyek.
-    ```sh
-    go mod tidy
-    ```
+2. Unduh dependensi (Go Modules):
+```sh
+go mod tidy
+```
 
-## Cara Penggunaan
+## Menjalankan (Run)
 
-Jalankan aplikasi dari direktori root proyek:
-
+- Menjalankan langsung dari source:
 ```sh
 go run ./cmd/pengikisweb
 ```
 
-Alat ini akan memulai sesi interaktif:
+- Membangun binary lalu menjalankan:
+```sh
+go build -o scr-go ./cmd/pengikisweb
+./scr-go
+```
 
-1.  **Masukkan URL Target**: Anda akan diminta untuk memasukkan URL lengkap dari halaman web yang ingin Anda kikis.
-    ```
-    Silakan masukkan URL target:
-    > <ketik-url-anda-di-sini>
-    ```
+Catatan: Nama package / entrypoint di repo ini adalah `cmd/pengikisweb`. Jika Anda mengganti struktur, sesuaikan perintah di atas.
 
-2.  **Pilih Elemen HTML**: Sebuah daftar elemen HTML bernomor akan muncul. Masukkan nomor yang sesuai, dipisahkan dengan koma.
-    ```
-    Pilih elemen HTML yang akan dikikis (pisahkan dengan koma, contoh: 1, 3, 8):
-    1. h1
-    2. h2
-    3. p
-    ...
-    > 1, 3, 8
-    ```
+## Cara penggunaan (interaktif)
 
-3.  **Pilih Format Output**: Tentukan apakah Anda ingin mengekstrak hanya teks bersih atau tag HTML penuh dengan memasukkan nomor pilihan.
-    ```
-    Pilih format keluaran:
-    1. Teks Bersih Saja
-    2. HTML Penuh
-    > 1
-    ```
+Setelah menjalankan program, Anda akan diminta memasukkan beberapa input:
 
-Setelah Anda menyelesaikan semua prompt, scraper akan memulai prosesnya. Setelah selesai, pesan sukses akan ditampilkan, menunjukkan nama file JSON tempat data Anda disimpan.
+1. Masukkan URL target:
+```
+Silakan masukkan URL target:
+> https://example.com
+```
 
-## Struktur Output
+2. Pilih elemen HTML yang ingin diekstrak. Program akan menampilkan daftar bernomor, misal:
+```
+Pilih elemen HTML yang akan dikikis (pisahkan dengan koma, contoh: 1,3,8):
+1. h1
+2. h2
+3. p
+4. a
+5. img
+> 1,3,4
+```
 
-Hasilnya akan disimpan dalam file bernama `hasil_<timestamp>.json` di direktori root proyek. Strukturnya adalah sebuah objek JSON di mana setiap kunci sesuai dengan pemilih HTML yang Anda pilih, dan nilainya adalah array string yang berisi data yang diekstraksi.
+3. Pilih format output:
+```
+Pilih format keluaran:
+1. Teks Bersih Saja (hanya inner text)
+2. HTML Penuh (termasuk tag dan atribut)
+> 1
+```
 
-**Contoh `hasil_1679812345.json`:**
+Setelah input selesai, scraper akan mulai memproses halaman sesuai pilihan. Selama proses, program menerapkan rotasi User-Agent dan jeda acak antara permintaan untuk mengurangi risiko pemblokiran.
+
+## Struktur file keluaran
+
+Hasil scraping disimpan di file `hasil_<timestamp>.json` di direktori root proyek (timestamp dalam format Unix epoch). Format JSON:
+
+- Kunci: nama elemen/pemilih (selector) yang dipilih.
+- Nilai: array string berisi hasil ekstraksi untuk selector tersebut.
+- Jika memilih "Teks Bersih", setiap item adalah teks (innerText) dari elemen.
+- Jika memilih "HTML Penuh", setiap item adalah HTML dari elemen (outerHTML).
+
+Contoh `hasil_1679812345.json`:
 ```json
 {
   "h1": [
@@ -86,6 +101,51 @@ Hasilnya akan disimpan dalam file bernama `hasil_<timestamp>.json` di direktori 
 }
 ```
 
+## Perilaku Permintaan & Etika
+
+- scr-go mencoba meniru perilaku manusia dengan merotasi header User-Agent dan menambahkan jeda acak. Ini bukanlah jaminan untuk menghindari pemblokiran.
+- Hormati file `robots.txt` dan ketentuan layanan situs web yang Anda kunjungi. Jangan melakukan scraping agresif yang dapat membebani server.
+- Scraping konten berhak cipta atau pribadi tanpa izin dapat melanggar hukum — pastikan penggunaan Anda sesuai hukum yang berlaku.
+
+## Konfigurasi (opsional)
+
+Catatan: Implementasi detil konfigurasi tergantung pada kode. Beberapa opsi yang biasanya tersedia atau mudah ditambahkan:
+- Menentukan daftar User-Agent kustom.
+- Mengatur rentang delay acak (mis. 1–5 detik).
+- Mengatur timeout HTTP dan retry policy.
+- Menyaring hasil berdasarkan atribut (mis. hanya <a> dengan atribut target tertentu).
+
+Jika Anda ingin saya menambahkan file konfigurasi (mis. TOML/JSON) dan parsingnya di kode, beri tahu saya dan saya bisa membuat PR contoh.
+
+## Struktur proyek (sekilas)
+
+- cmd/pengikisweb — entrypoint aplikasi.
+- internal/ atau pkg/ (mis. antarmuka, pengikis, utilitas) — modul fungsional (nama folder bisa berbeda tergantung implementasi).
+- go.mod — manajemen dependensi.
+- hasil_*.json — contoh file keluaran yang dihasilkan oleh program.
+
+Sesuaikan struktur direktori jika repo Anda berbeda; README ini dimaksudkan untuk memberikan gambaran umum yang jelas.
+
+## Kontribusi
+
+Kontribusi welcome! Jika Anda ingin:
+- Menambahkan fitur (mis. support untuk paging, autentikasi, proxy),
+- Memperbaiki bug,
+- Menambahkan pengujian unit atau integrasi,
+
+Buka issue atau kirim pull request (PR) dengan deskripsi perubahan.
+
+## Lisensi
+
+Tambahkan file LICENSE di repo dengan lisensi yang Anda pilih (mis. MIT, Apache-2.0). README ini tidak menyertakan lisensi secara otomatis.
+
 ## Penafian
 
-Harap gunakan alat ini secara bertanggung jawab. Hormati file `robots.txt` situs web dan syarat layanan mereka. Scraping yang agresif dapat membebani server situs web dan dapat menyebabkan alamat IP Anda diblokir. Pengembang tidak bertanggung jawab atas penyalahgunaan alat ini.
+Gunakan alat ini secara bertanggung jawab. Penulis/pemelihara tidak bertanggung jawab atas penggunaan yang melanggar hukum atau yang menimbulkan kerusakan pada pihak ketiga.
+
+---
+Terima kasih telah menggunakan scr-go — jika Anda ingin, saya bisa:
+- Menyelaraskan README ini secara langsung dengan struktur file di repo (mencantumkan daftar file/struktur sebenarnya),
+- Menambahkan contoh config yang dapat dibaca program, atau
+- Membuat file CONTRIBUTING.md dan contoh issue/PR template.
+Pilih salah satu dan saya akan menyiapkannya. 
