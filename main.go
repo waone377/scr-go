@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"pengikisweb/internal/antarmuka"
-	"pengikisweb/internal/pengikis"
-	"pengikisweb/internal/utilitas"
+	"pengikisweb/src/antarmuka"
+	"pengikisweb/src/pengikis"
+	"pengikisweb/src/utilitas"
 )
 
 func main() {

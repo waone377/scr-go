@@ -8,7 +8,7 @@ scr-go adalah alat pengikis web (web scraper) berbasis baris perintah yang ditul
 - Rotasi header User-Agent otomatis dan penundaan acak antar permintaan untuk meniru perilaku penjelajahan manusia.
 - Pilihan elemen HTML fleksibel (mis. h1, h2, p, a, dll.) — bisa memilih beberapa elemen sekaligus.
 - Pilihan format keluaran: teks bersih (tanpa tag HTML) atau HTML penuh (dengan tag dan atribut).
-- Hasil disimpan sebagai file JSON terformat dengan nama unik berdasarkan timestamp.
+- Hasil disimpan sebagai file JSON terformat di dalam folder `output` dengan nama unik berdasarkan timestamp.
 - Struktur kode modular untuk memudahkan pemeliharaan dan pengembangan.
 
 ## Prasyarat
@@ -33,16 +33,14 @@ go mod tidy
 
 - Menjalankan langsung dari source:
 ```sh
-go run ./cmd/pengikisweb
+go run main.go
 ```
 
 - Membangun binary lalu menjalankan:
 ```sh
-go build -o scr-go ./cmd/pengikisweb
+go build -o scr-go main.go
 ./scr-go
 ```
-
-Catatan: Nama package / entrypoint di repo ini adalah `cmd/pengikisweb`. Jika Anda mengganti struktur, sesuaikan perintah di atas.
 
 ## Cara penggunaan (interaktif)
 
@@ -77,14 +75,14 @@ Setelah input selesai, scraper akan mulai memproses halaman sesuai pilihan. Sela
 
 ## Struktur file keluaran
 
-Hasil scraping disimpan di file `hasil_<timestamp>.json` di direktori root proyek (timestamp dalam format Unix epoch). Format JSON:
+Hasil scraping disimpan di file `output/hasil_<timestamp>.json` di direktori root proyek (timestamp dalam format Unix epoch). Format JSON:
 
 - Kunci: nama elemen/pemilih (selector) yang dipilih.
 - Nilai: array string berisi hasil ekstraksi untuk selector tersebut.
 - Jika memilih "Teks Bersih", setiap item adalah teks (innerText) dari elemen.
 - Jika memilih "HTML Penuh", setiap item adalah HTML dari elemen (outerHTML).
 
-Contoh `hasil_1679812345.json`:
+Contoh `output/hasil_1679812345.json`:
 ```json
 {
   "h1": [
@@ -107,24 +105,15 @@ Contoh `hasil_1679812345.json`:
 - Hormati file `robots.txt` dan ketentuan layanan situs web yang Anda kunjungi. Jangan melakukan scraping agresif yang dapat membebani server.
 - Scraping konten berhak cipta atau pribadi tanpa izin dapat melanggar hukum — pastikan penggunaan Anda sesuai hukum yang berlaku.
 
-## Konfigurasi (opsional)
+## Struktur proyek
 
-Catatan: Implementasi detil konfigurasi tergantung pada kode. Beberapa opsi yang biasanya tersedia atau mudah ditambahkan:
-- Menentukan daftar User-Agent kustom.
-- Mengatur rentang delay acak (mis. 1–5 detik).
-- Mengatur timeout HTTP dan retry policy.
-- Menyaring hasil berdasarkan atribut (mis. hanya <a> dengan atribut target tertentu).
-
-Jika Anda ingin saya menambahkan file konfigurasi (mis. TOML/JSON) dan parsingnya di kode, beri tahu saya dan saya bisa membuat PR contoh.
-
-## Struktur proyek (sekilas)
-
-- cmd/pengikisweb — entrypoint aplikasi.
-- internal/ atau pkg/ (mis. antarmuka, pengikis, utilitas) — modul fungsional (nama folder bisa berbeda tergantung implementasi).
-- go.mod — manajemen dependensi.
-- hasil_*.json — contoh file keluaran yang dihasilkan oleh program.
-
-Sesuaikan struktur direktori jika repo Anda berbeda; README ini dimaksudkan untuk memberikan gambaran umum yang jelas.
+- `main.go` — Titik masuk (entrypoint) utama aplikasi.
+- `src/` — Berisi paket-paket logika inti aplikasi.
+  - `antarmuka/` — Logika untuk interaksi dengan pengguna via CLI.
+  - `pengikis/` — Logika inti untuk melakukan scraping web.
+  - `utilitas/` — Fungsi bantuan, seperti menyimpan file.
+- `output/` — Direktori tempat hasil scraping disimpan.
+- `go.mod`, `go.sum` — Manajemen dependensi Go.
 
 ## Kontribusi
 
@@ -137,15 +126,8 @@ Buka issue atau kirim pull request (PR) dengan deskripsi perubahan.
 
 ## Lisensi
 
-Tambahkan file LICENSE di repo dengan lisensi yang Anda pilih (mis. MIT, Apache-2.0). README ini tidak menyertakan lisensi secara otomatis.
+Proyek ini dilisensikan di bawah Lisensi MIT. Lihat file `LICENSE` untuk detailnya.
 
 ## Penafian
 
 Gunakan alat ini secara bertanggung jawab. Penulis/pemelihara tidak bertanggung jawab atas penggunaan yang melanggar hukum atau yang menimbulkan kerusakan pada pihak ketiga.
-
----
-Terima kasih telah menggunakan scr-go — jika Anda ingin, saya bisa:
-- Menyelaraskan README ini secara langsung dengan struktur file di repo (mencantumkan daftar file/struktur sebenarnya),
-- Menambahkan contoh config yang dapat dibaca program, atau
-- Membuat file CONTRIBUTING.md dan contoh issue/PR template.
-Pilih salah satu dan saya akan menyiapkannya. 
